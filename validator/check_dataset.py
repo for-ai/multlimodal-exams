@@ -129,12 +129,10 @@ class DatasetValidator:
                     raise ValueError(f"The file must contain a JSON array (list of entries)")
 
                 self.json_entries = entries
-
             return True
         except Exception as e:
             self.console.print(f"Error loading file {self.json_file}: {e}", style="red")
-
-        return False
+            return False
 
     def _validate_entries(self) -> None:
         for index, entry in enumerate(self.json_entries):
