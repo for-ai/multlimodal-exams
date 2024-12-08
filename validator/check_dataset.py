@@ -45,20 +45,6 @@ class EntrySchema(BaseModel):
 
         return value
 
-    @staticmethod
-    def _validate_list_uniqueness(values: list) -> list:
-        if len(set(values)) != len(values):
-            raise ValueError("All values must be unique")
-
-        return values
-
-    @staticmethod
-    def _validate_list_length(values: list, expected_length: int) -> list:
-        if len(values) != expected_length:
-            raise ValueError(f"Expected {expected_length} values, but got {len(values)}")
-
-        return values
-
     @field_validator("language")
     def validate_language(cls, language: str, config: ValidationInfo) -> str:
         expected_language = config.context.get("expected_language")
@@ -73,9 +59,13 @@ class EntrySchema(BaseModel):
         for option in options:
             cls._validate_string(option)
 
-        cls._validate_list_uniqueness(options)
+        if len(set(options)) != len(options):
+            raise ValueError("All values must be unique")
 
-        return cls._validate_list_length(options, EXPECTED_OPTIONS_COUNT)
+        if len(options) != EXPECTED_OPTIONS_COUNT:
+            raise ValueError(f"Expected {EXPECTED_OPTIONS_COUNT} values, but got {len(options)}")
+
+        return options
 
     @field_validator("answer")
     def validate_answer(cls, answer: int, config: ValidationInfo) -> int:
