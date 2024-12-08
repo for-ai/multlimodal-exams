@@ -117,7 +117,6 @@ class DatasetValidator:
             return
 
         self._validate_entries()
-
         self._print_validation_report()
 
     def _load_json(self) -> bool:
