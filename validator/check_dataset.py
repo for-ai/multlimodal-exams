@@ -14,6 +14,9 @@ from rich.text import Text
 from rich.tree import Tree
 
 
+EXPECTED_OPTIONS_COUNT = 4
+
+
 class EntrySchema(BaseModel):
     language: str
     country: str
@@ -34,7 +37,7 @@ class EntrySchema(BaseModel):
 
     @staticmethod
     def _validate_string(value: str) -> str:
-        if len(value.strip()) == 0:
+        if not value.strip():
             raise ValueError("Value cannot be empty or whitespace")
 
         if value.startswith(" ") or value.endswith(" "):
@@ -43,24 +46,22 @@ class EntrySchema(BaseModel):
         return value
 
     @staticmethod
-    def _validate_uniqueness(values: list) -> list:
+    def _validate_list_uniqueness(values: list) -> list:
         if len(set(values)) != len(values):
             raise ValueError("All values must be unique")
 
         return values
 
     @staticmethod
-    def _validate_length(values: list, expected_length) -> list:
-        length = len(values)
-
-        if length != expected_length:
-            raise ValueError(f"Expected {expected_length} values, but got {length}")
+    def _validate_list_length(values: list, expected_length: int) -> list:
+        if len(values) != expected_length:
+            raise ValueError(f"Expected {expected_length} values, but got {len(values)}")
 
         return values
 
     @field_validator("language")
     def validate_language(cls, language: str, config: ValidationInfo) -> str:
-        expected_language = config.context.get("language")
+        expected_language = config.context.get("expected_language")
 
         if language != expected_language:
             raise ValueError(f"Expected '{expected_language}', but got '{language}'")
@@ -72,15 +73,15 @@ class EntrySchema(BaseModel):
         for option in options:
             cls._validate_string(option)
 
-        cls._validate_uniqueness(options)
+        cls._validate_list_uniqueness(options)
 
-        return cls._validate_length(options, 4)
+        return cls._validate_list_length(options, EXPECTED_OPTIONS_COUNT)
 
     @field_validator("answer")
     def validate_answer(cls, answer: int, config: ValidationInfo) -> int:
         options_count = len(config.data.get("options", []))
 
-        if options_count != 0 and answer not in range(options_count):
+        if options_count > 0 and not (0 <= answer < options_count):
             raise ValueError(f"Expected value from 0 to {options_count - 1}, but got {answer}")
 
         return answer
@@ -149,7 +150,7 @@ class DatasetValidator:
         for index, entry in enumerate(self.json_entries):
             try:
                 EntrySchema.model_validate(entry, context={
-                    "language": self.language_code
+                    "expected_language": self.language_code
                 })
             except ValidationError as e:
                 self.errors.extend([
