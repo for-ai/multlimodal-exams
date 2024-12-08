@@ -88,7 +88,7 @@ class EntrySchema(BaseModel):
 
 
 class EntryError:
-    def __init__(self, index: int, location: tuple | None, message: str) -> None:
+    def __init__(self, index: int, location: Optional[tuple], message: str) -> None:
         self.index = index
         self.location = location
         self.message = message
