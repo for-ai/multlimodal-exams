@@ -112,7 +112,7 @@ class EntryError:
         message = self.message.removeprefix("Value error, ")
 
         if self.location:
-            location = str(self.location).strip("(,)")
+            location = str(self.location).strip(",()")
             return f"Location: {location}, error: {message.lower()}"
 
         return message
