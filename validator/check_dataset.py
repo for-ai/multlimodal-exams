@@ -5,7 +5,7 @@ import argparse
 
 from typing import Union, Literal, Optional
 
-from pydantic import BaseModel, ValidationError, field_validator
+from pydantic import BaseModel, ValidationError, field_validator, model_validator
 from pydantic_core.core_schema import ValidationInfo
 from rich.console import Console
 from rich.panel import Panel
@@ -31,9 +31,9 @@ class EntrySchema(BaseModel):
     options: list[str]
     answer: int
     image_png: Optional[str]
-    image_information: Literal["useful", "essential"]
-    image_type: Literal["symbols", "figures", "graph", "table", "text"]
-    parallel_question_num: Optional[Union[int, str]]
+    image_information: Optional[Literal["useful", "essential"]]
+    image_type: Optional[Literal["graph", "table", "diagram", "scientific formula", "text", "figure", "map", "photo"]]
+    parallel_question_id: Optional[tuple[str, int]]
 
     @staticmethod
     def _validate_string(value: str) -> str:
@@ -76,12 +76,30 @@ class EntrySchema(BaseModel):
 
         return answer
 
+    @field_validator("parallel_question_id")
+    def validate_parallel_question_id(cls, parallel_question_id: Optional[tuple[str, int]]) -> Optional[tuple[str, int]]:
+        if isinstance(parallel_question_id, tuple) and isinstance(parallel_question_id[0], str):
+            cls._validate_string(parallel_question_id[0])
+
+        return parallel_question_id
+
     @field_validator(
         "country", "file_name", "source", "license", "level", "category_en", "category_original_lang",
-        "original_question_num", "question", "image_png", "parallel_question_num"
+        "original_question_num", "question", "image_png"
     )
     def validate_string_fields(cls, value: Optional[str]) -> Optional[str]:
         return cls._validate_string(value) if isinstance(value, str) else value
+
+    @model_validator(mode="after")
+    def validate_image_data(cls, model: "EntrySchema") -> "EntrySchema":
+        image_data = [model.image_png, model.image_information, model.image_type]
+
+        if any(image_data) and not all(image_data):
+            raise ValueError(
+                "All fields related to image data (prefixed with 'image_') must be specified if any one of them is specified"
+            )
+
+        return model
 
     class Config:
         extra = "forbid"
@@ -94,10 +112,13 @@ class EntryError:
         self.message = message
 
     def __str__(self) -> str:
-        if self.location:
-            return f"Location: {str(self.location).strip("(,)")}, error: {self.message.lower()}"
+        message = self.message.removeprefix("Value error, ")
 
-        return self.message
+        if self.location:
+            location = str(self.location).strip("(,)")
+            return f"Location: {location}, error: {message.lower()}"
+
+        return message
 
 
 class DatasetValidator:
@@ -125,7 +146,7 @@ class DatasetValidator:
                 entries = json.load(file)
 
                 if not isinstance(entries, list):
-                    raise ValueError(f"The file must contain a JSON array (list of entries)")
+                    raise ValueError("The file must contain a JSON array (list of entries)")
 
                 self.json_entries = entries
             return True
