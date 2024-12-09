@@ -1,5 +1,6 @@
 # Cohere For AI Community, Danylo Boiko, 2024
 
+import os
 import json
 import argparse
 
@@ -42,19 +43,32 @@ class EntrySchema(BaseModel):
 
         return value
 
+    @staticmethod
+    def _validate_image(image_name: str, config: ValidationInfo) -> None:
+        images_path = config.context.get("images_path")
+
+        if os.path.basename(image_name) != image_name:
+            raise ValueError(f"The image name '{image_name}' must not include directories")
+
+        if not os.path.isfile(os.path.join(images_path, image_name)):
+            raise ValueError(f"The specified image '{image_name}' does not exist in {images_path}")
+
     @field_validator("language")
     def validate_language(cls, language: str, config: ValidationInfo) -> str:
-        expected_language = config.context.get("expected_language")
+        dataset_language = config.context.get("dataset_language")
 
-        if language != expected_language:
-            raise ValueError(f"Expected '{expected_language}', but got '{language}'")
+        if language != dataset_language:
+            raise ValueError(f"Expected '{dataset_language}', but got '{language}'")
 
         return cls._validate_string(language)
 
     @field_validator("options")
-    def validate_options(cls, options: list[str]) -> list[str]:
+    def validate_options(cls, options: list[str], config: ValidationInfo) -> list[str]:
         for option in options:
             cls._validate_string(option)
+
+            if option.lower().endswith(".png"):
+                cls._validate_image(option, config)
 
         if len(options) < 2:
             raise ValueError(f"Expected at least 2 options, but got {len(options)}")
@@ -73,6 +87,18 @@ class EntrySchema(BaseModel):
 
         return answer
 
+    @field_validator("image_png")
+    def validate_image_png(cls, image_png: Optional[str], config: ValidationInfo) -> Optional[str]:
+        if isinstance(image_png, str):
+            cls._validate_string(image_png)
+
+            if not image_png.lower().endswith(".png"):
+                raise ValueError(f"The file '{image_png}' is not a PNG image")
+
+            cls._validate_image(image_png, config)
+
+        return image_png
+
     @field_validator("parallel_question_id")
     def validate_parallel_question_id(cls, parallel_question_id: Optional[tuple[str, int]]) -> Optional[tuple[str, int]]:
         if isinstance(parallel_question_id, tuple) and isinstance(parallel_question_id[0], str):
@@ -81,8 +107,8 @@ class EntrySchema(BaseModel):
         return parallel_question_id
 
     @field_validator(
-        "country", "file_name", "source", "license", "level", "category_en", "category_original_lang",
-        "original_question_num", "question", "image_png"
+        "country", "file_name", "source", "license", "level", "category_en",
+        "category_original_lang", "original_question_num", "question"
     )
     def validate_string_fields(cls, value: Optional[str]) -> Optional[str]:
         return cls._validate_string(value) if isinstance(value, str) else value
@@ -123,12 +149,14 @@ class DatasetValidator:
         self.json_file: str = json_file
         self.json_entries: list[dict] = []
         self.language_code: str = language_code.lower()
+        self.images_path: str = os.path.join(os.path.dirname(json_file), "images")
         self.console: Console = Console()
         self.errors: list[EntryError] = []
 
     def validate(self) -> None:
         self.console.print("Starting validation...", style="green")
         self.console.print(f"JSON file: {self.json_file}", style="cyan")
+        self.console.print(f"Images path: {self.images_path}", style="cyan")
         self.console.print(f"Language code: {self.language_code}", style="cyan")
 
         if not self._load_json():
@@ -155,7 +183,8 @@ class DatasetValidator:
         for index, entry in enumerate(self.json_entries):
             try:
                 EntrySchema.model_validate(entry, context={
-                    "expected_language": self.language_code
+                    "dataset_language": self.language_code,
+                    "images_path": self.images_path,
                 })
             except ValidationError as e:
                 self.errors.extend([
