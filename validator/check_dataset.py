@@ -14,9 +14,6 @@ from rich.text import Text
 from rich.tree import Tree
 
 
-EXPECTED_OPTIONS_COUNT = 4
-
-
 class EntrySchema(BaseModel):
     language: str
     country: str
@@ -59,11 +56,11 @@ class EntrySchema(BaseModel):
         for option in options:
             cls._validate_string(option)
 
+        if len(options) < 2:
+            raise ValueError(f"Expected at least 2 options, but got {len(options)}")
+
         if len(set(options)) != len(options):
             raise ValueError("All values must be unique")
-
-        if len(options) != EXPECTED_OPTIONS_COUNT:
-            raise ValueError(f"Expected {EXPECTED_OPTIONS_COUNT} values, but got {len(options)}")
 
         return options
 
