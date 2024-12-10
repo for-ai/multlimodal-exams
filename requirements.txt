@@ -1,0 +1,4 @@
+pypdf
+cohere
+pillow
+ipython
