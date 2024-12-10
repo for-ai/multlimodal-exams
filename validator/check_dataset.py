@@ -129,10 +129,10 @@ class EntrySchema(BaseModel):
 
 
 class EntryError:
-    def __init__(self, index: int, location: Optional[tuple], message: str) -> None:
+    def __init__(self, index: int, message: str, location: Optional[tuple] = None) -> None:
         self.index = index
-        self.location = location
         self.message = message
+        self.location = location
 
     def __str__(self) -> str:
         message = self.message.removeprefix("Value error, ")
@@ -180,15 +180,24 @@ class DatasetValidator:
             return False
 
     def _validate_entries(self) -> None:
+        seen_entries = {}
+
         for index, entry in enumerate(self.json_entries):
             try:
-                EntrySchema.model_validate(entry, context={
+                entry_model = EntrySchema.model_validate(entry, context={
                     "dataset_language": self.language_code,
                     "images_path": self.images_path,
                 })
+
+                entry_hash = (entry_model.question, tuple(option for option in entry_model.options))
+
+                if entry_hash not in seen_entries:
+                    seen_entries[entry_hash] = index
+                else:
+                    self.errors.append(EntryError(index, f"Duplicate of entry with index {seen_entries[entry_hash]}"))
             except ValidationError as e:
                 self.errors.extend([
-                    EntryError(index, error.get("loc", None), error.get("msg")) for error in e.errors()
+                    EntryError(index, error.get("msg"), error.get("loc", None)) for error in e.errors()
                 ])
 
     def _print_validation_report(self) -> None:
