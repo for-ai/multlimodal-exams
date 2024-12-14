@@ -15,6 +15,9 @@ from rich.text import Text
 from rich.tree import Tree
 
 
+MIN_OPTIONS_COUNT = 4
+
+
 class EntrySchema(BaseModel):
     language: str
     country: str
@@ -70,8 +73,8 @@ class EntrySchema(BaseModel):
             if option.lower().endswith(".png"):
                 cls._validate_image(option, config)
 
-        if len(options) < 2:
-            raise ValueError(f"Expected at least 2 options, but got {len(options)}")
+        if len(options) < MIN_OPTIONS_COUNT:
+            raise ValueError(f"Expected at least {MIN_OPTIONS_COUNT} options, but got {len(options)}")
 
         if len(set(options)) != len(options):
             raise ValueError("All values must be unique")
