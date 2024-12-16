@@ -192,7 +192,7 @@ class DatasetValidator:
                     "images_path": self.images_path,
                 })
 
-                entry_hash = (entry_model.question, tuple(option for option in entry_model.options))
+                entry_hash = (entry_model.question, entry_model.image_png, tuple(opt for opt in entry_model.options))
 
                 if entry_hash not in seen_entries:
                     seen_entries[entry_hash] = index
