@@ -14,6 +14,16 @@ It is intended to serve as a template for implementing more advanced PDF parsing
   - Extracted text
   - Paths to extracted images and tables.
 
+## Installation
+To set up the environment, follow these steps:
+
+```
+git clone https://github.com/for-ai/multlimodal-exams.git
+cd multimodal-exams
+conda env create -f environment.yml
+conda activate mm-exams
+```
+
 ## Current Limitations
 This is a preliminary version with the following known limitations:
 1. **Dividing Graphs into Subgraphs**: Graphs or charts are splited into separate, smaller images.
