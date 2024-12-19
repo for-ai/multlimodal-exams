@@ -26,10 +26,10 @@ conda activate mm-exams
 
 ## Current Limitations
 This is a preliminary version with the following known limitations:
-1. **Dividing Graphs into Subgraphs**: Graphs or charts are splited into separate, smaller images.
+1. **Dividing Graphs into Subgraphs**: Graphs or charts are split into separate, smaller images. Clustering is used to address this issue, but the clustering algorithm could be improved.
 2. **Reading Nonexistent Images**: The script may detect and attempt to read images that don’t exist, leading to black images being stored.
-3. **Poor Equation Parsing**: Mathematical equations are not accurately parsed or extracted.
-4. **High Dependence on LLMs for Structure**: The script currently relies on a large language model (LLM) to parse the JSON structure and place images in the correct locations. This approach can be improved by incorporating PDFMiner.six for more accurate and reliable layout and text extraction. (Will be availble soon)
+3. **Poor Equation Parsing**: Mathematical equations are not accurately parsed or extracted. (Testing a new version)
+4. **Mid-Dependence on LLMs**: The current script relies on a large language model (LLM) to parse the JSON structure. While placeholders are included for the images, some text—particularly in tables—may be repeated, leaving it up to the LLM to resolve any inconsistencies.
 
 ## Recommendations
 If you’re exploring PDF parsing, consider looking into:
