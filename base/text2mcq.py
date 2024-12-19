@@ -103,7 +103,7 @@ def main(dir_path, openai_key):
         f for f in listdir(dir_path_parsed) if isfile(join(dir_path_parsed, f))
     ]
     print(onlyfiles)
-    onlyfiles = ["Ayurveda Therapist.csv", "Fire And Rescue Officer.csv"]
+
     for f in onlyfiles:
         file_path = os.path.join(dir_path_parsed, f)
         print("Parsing file: {}".format(f))
@@ -122,7 +122,6 @@ def main(dir_path, openai_key):
                 model_args={
                     "temperature": 0.0,
                     "max_tokens": 4096,
-                    "top_p": 1,
                     "frequency_penalty": 0,
                     "presence_penalty": 0,
                 },
