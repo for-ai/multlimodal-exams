@@ -13,6 +13,7 @@ import time
 from os import listdir
 from os.path import isfile, join
 import os
+from metadata_conf import *
 
 
 pre_prompt = """Please extract the multiple-choice questions that are present in the following text. The out format should be the following:
@@ -140,23 +141,24 @@ def main(dir_path, openai_key):
                     ) = parse_gpt_output(q)
 
                     new_row = {
-                        "category_a": None,
-                        "category_b": None,
-                        "category_og_en": None,
-                        "category_og": None,
-                        "level": None,
-                        "year": None,
-                        "source": None,
+                        "language": LANGUAGE,
+                        "category_og_en": CATEGORY_ORIGINAL_LANG,
+                        "category_og": CATEGORY_EN,
+                        "level": LEVEL,
+                        "license": LICENSE,
+                        "source": SOURCE,
+                        "country": COUNTRY,
+                        "file_name": SOURCE.split("/")[-1].split(".")[0],
+                        "original_question_num": None,
                         "page_num": row["page_num"],
                         "parsed_text": row["parsed_text"],
-                        "response": response,
                         "question": question,
-                        "choice_1": choice_1,
-                        "choice_2": choice_2,
-                        "choice_3": choice_3,
-                        "choice_4": choice_4,
-                        "choice_5": choice_5,
+                        "options": [i for i in [choice_1, choice_2, choice_3, choice_4, choice_5] if i is not None],
                         "answer": None,
+                        "image_png": None,
+                        "image_information": None,
+                        "image_type": None,
+                        "parallel_question_id": None,
                     }
 
                     results.append(new_row)

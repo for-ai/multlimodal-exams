@@ -1,0 +1,9 @@
+# Enter empty data
+INPUT_FILE_PATH = ""
+SOURCE = ""
+LANGUAGE = ""
+COUNTRY = ""
+LICENSE = ""
+LEVEL = ""
+CATEGORY_EN = ""
+CATEGORY_ORIGINAL_LANG = ""
