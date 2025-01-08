@@ -2,7 +2,7 @@
   <View style="display: grid; grid-template-columns: 0.5fr 1fr 1fr; gap: 20px; padding: 20px;">
     <View style="border: 1px solid #ccc; padding: 10px;">
         <Header value="Status"/>
-        <Text name="mark" value="Have Issues?"></Text>
+        <Text name="mark" value="Does the following extracted question/options contain errors?"></Text>
         <Choices name="status" toName="mark" choice="single" showInLine="true">
          <Choice value="Yes"/>
         </Choices>
