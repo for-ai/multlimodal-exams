@@ -1,0 +1,64 @@
+<View>
+  <View style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; padding: 20px;">
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Mark?"/>
+        <Text name="mark" value="No"></Text>
+        <Choices name="status" toName="mark" choice="single" showInLine="true">
+         <Choice value="Yes"/>
+        </Choices>
+     </View>
+      
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Question Content"/>
+      <Text name="questionID" value="Question #$original_question_num" label="Question ID"/>
+      <Text name="question" value="$question" label="Question Text"/>
+      <Image name="question_image" value="$image_png" defaultZoom="original" maxWidth="300px" width="300px"/>
+    </View>
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Answer"/>
+      <Text name="answer_text" value="$answer"/>
+      <Image name="answer_image" value="$answer_img"  defaultZoom="original"/>
+    </View>
+  </View>
+  
+  <Header value="Option Texts"/>
+  <View style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; padding: 20px;">
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 0"/>
+      <Text name="option_text_0" value="$options[0]"/>
+    </View>
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 1"/>
+      <Text name="option_text_1" value="$options[1]"/>
+    </View>
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 2"/>
+      <Text name="option_text_2" value="$options[2]"/>
+    </View>
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 3"/>
+      <Text name="option_text_3" value="$options[3]"/>
+    </View>
+  </View>
+ 
+  <Header value="Option Images"/>
+  <View style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; padding: 20px;">
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 0"/>
+      <Image name="option_image_0" value="$option_img[0]" defaultZoom="original" maxWidth="300px" width="300px"/>
+    </View>
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 1"/>
+      <Image name="option_image_1" value="$option_img[1]" defaultZoom="original"  maxWidth="300px" width="300px" when="$option_img[1]"/>
+    </View>
+
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 2"/>
+      <Image name="option_image_2" value="$option_img[2]" defaultZoom="original"  maxWidth="300px" width="300px"/>
+    </View>
+    <View style="border: 1px solid #ccc; padding: 10px;">
+      <Header value="Option 3"/>
+      <Image name="option_image_3" value="$option_img[3]" defaultZoom="original"  maxWidth="300px" width="300px"/>
+    </View>
+  </View>
+</View>
