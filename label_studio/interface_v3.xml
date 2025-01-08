@@ -1,8 +1,8 @@
 <View>
   <View style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; padding: 20px;">
     <View style="border: 1px solid #ccc; padding: 10px;">
-      <Header value="Mark?"/>
-        <Text name="mark" value="No"></Text>
+        <Header value="Status"/>
+        <Text name="mark" value="Have Issues?"></Text>
         <Choices name="status" toName="mark" choice="single" showInLine="true">
          <Choice value="Yes"/>
         </Choices>
