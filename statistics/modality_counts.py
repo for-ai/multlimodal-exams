@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import argparse
 from collections import defaultdict
 from huggingface_hub import HfApi, HfFolder, Repository
 from huggingface_hub import hf_hub_download
@@ -21,6 +22,9 @@ def main(local_dir):
   print(hf_links)
 
   for link in hf_links:
+    if not link.startswith("https://"):
+      continue
+    
     if link.endswith("/"):
       link = link[:-1]
     link = link.strip()
@@ -36,16 +40,19 @@ def main(local_dir):
                       local_dir=local_dir)
       json_path = f"{local_dir}/{json_file}"
       
-      with open(json_path, "r", encoding="utf-8") as f:
-        try:
-          json_data = json.load(f)
-        except:        
-          json_data = [json.loads(line) for line in f]
-          import ipdb; ipdb.set_trace()
+      try:
+        with open(json_path, "r", encoding="utf-8") as f:
+          try:
+            json_data = json.load(f)
+          except:        
+            json_data = [json.loads(line) for line in f]
+      except:
+        print(f"Error reading {json_path}")
+        continue
       
-      is_mutlimodal = False
       counts = defaultdict(int)
       for data in json_data:
+        is_mutlimodal = False
         for option in data['options']:
           if ".png" in option:
             is_mutlimodal = True
@@ -71,4 +78,3 @@ if __name__ == "__main__":
   args = parser.parse_args()
   local_dir = args.local_dir
   main(local_dir)
-
