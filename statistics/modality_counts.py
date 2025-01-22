@@ -1,9 +1,12 @@
 import pandas as pd
 import json
+import os
 import argparse
 from collections import defaultdict
 from huggingface_hub import HfApi, HfFolder, Repository
 from huggingface_hub import hf_hub_download
+from rich.console import Console
+from rich.table import Table
 
 
 def main(local_dir):
@@ -20,8 +23,18 @@ def main(local_dir):
 
   hf_links = [link.replace("tree/main", "") for link in hf_links]
   print(hf_links)
+  
+  console = Console()
+  table = Table(show_header=True, header_style="bold magenta")
+  table.add_column("Repo", justify="left")
+  table.add_column("JSON", justify="right")
+  table.add_column("Text", justify="right")
+  table.add_column("Multimodal", justify="right")
+  table.add_column("Total", justify="right")
+  grand_total = grand_text = grand_multimodal = 0
 
   for link in hf_links:
+    link = link.strip()
     if not link.startswith("https://"):
       continue
     
@@ -34,11 +47,13 @@ def main(local_dir):
     repo_files = api.list_repo_files(repo, repo_type="dataset")
     json_files = [file for file in repo_files if file.endswith(".json")]
     print(json_files)
+    save_dir = os.path.join(local_dir, repo.replace("/", "__"))
+    os.makedirs(save_dir, exist_ok=True)
     for json_file in json_files:
       print(repo)
       hf_hub_download(repo_id=repo, filename=json_file, repo_type="dataset", 
-                      local_dir=local_dir)
-      json_path = f"{local_dir}/{json_file}"
+                      local_dir=save_dir)
+      json_path = f"{save_dir}/{json_file}"
       
       try:
         with open(json_path, "r", encoding="utf-8") as f:
@@ -70,6 +85,18 @@ def main(local_dir):
       print(dict(counts))
       print('-'*80)
 
+      grand_total += counts['total']
+      grand_multimodal += counts['multimodal']
+      grand_text += counts['text']
+      
+      table.add_row(repo, json_file, str(counts['total']), 
+                    str(counts['multimodal']), str(counts['text']))
+    # break
+  
+  # Add a horizontal line
+  table.add_row("-" * 80, "-" * 80, "-" * 80, "-" * 80, "-" * 80)
+  table.add_row("Total", "", str(grand_text), str(grand_multimodal), str(grand_total))
+  console.print(table)
     
 # Take local_dir as input from argparse
 if __name__ == "__main__":
