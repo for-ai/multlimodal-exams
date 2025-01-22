@@ -15,7 +15,7 @@ from rich.text import Text
 from rich.tree import Tree
 
 
-MIN_OPTIONS_COUNT = 4
+MIN_OPTIONS_COUNT = 2
 
 
 class EntrySchema(BaseModel):
