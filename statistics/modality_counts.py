@@ -89,8 +89,8 @@ def main(local_dir):
       grand_multimodal += counts['multimodal']
       grand_text += counts['text']
       
-      table.add_row(repo, json_file, str(counts['total']), 
-                    str(counts['multimodal']), str(counts['text']))
+      table.add_row(repo, json_file, str(counts['text']), 
+                    str(counts['multimodal']), str(counts['total']))
     # break
   
   # Add a horizontal line
