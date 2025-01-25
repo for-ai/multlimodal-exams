@@ -6,6 +6,7 @@ import json
 import base64
 import backoff
 import argparse
+import tqdm
 
 
 def encode_image(image_path):
@@ -159,7 +160,7 @@ def main():
     json_dir = os.path.dirname(args.input_json)
     output_dataset = []
 
-    for data in dataset:
+    for data in tqdm.tqdm(dataset):
         image_path = data["image_png"]
         query = data["question"]
         if not image_path:
