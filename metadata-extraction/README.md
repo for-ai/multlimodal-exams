@@ -1,7 +1,7 @@
 ## Usage
 
 ```bash
-python vlm_metadata_open.py \
+python vlm_metadata.py \
 	--api_base_url https://openrouter.ai/api/v1 \
 	--api_key $API_KEY \
 	--model meta-llama/llama-3.2-90b-vision-instruct:free \
