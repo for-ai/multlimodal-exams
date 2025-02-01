@@ -38,7 +38,7 @@ def main(local_dir):
   
   visited = defaultdict(bool)
   for idx, link in enumerate(hf_links):
-    break
+    # break
     if visited[link]:
       continue
     visited[link] = True
